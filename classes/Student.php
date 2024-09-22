@@ -5,6 +5,7 @@ class Student
     public $student_names;
     public $email;
     public $mobile;
+    public $records = array();
 
     private $conn;
     private $table_name;
@@ -40,5 +41,13 @@ class Student
         }
 
         return false;
+    }
+
+    public function get_all_data()
+    {
+        $sql_query = "SELECT * FROM " . $this->table_name;
+        $std_obj = $this->conn->prepare($sql_query);
+        $std_obj->execute();
+        return $std_obj->fetchAll(PDO::FETCH_ASSOC);
     }
 }
