@@ -1,10 +1,10 @@
 <?php
-
 class Student
 {
     public $student_names;
     public $email;
     public $mobile;
+    public $id;
     public $records = array();
 
     private $conn;
@@ -17,9 +17,9 @@ class Student
         $this->table_name = "tbl_student";
     }
 
+    // Method to create data
     public function create_data()
     {
-        // Correct SQL query (added spaces and commas)
         $query = "INSERT INTO " . $this->table_name . " (student_names, email, mobile) VALUES (?, ?, ?)";
 
         // Prepare the query
@@ -30,24 +30,45 @@ class Student
         $this->email = htmlspecialchars(strip_tags($this->email));
         $this->mobile = htmlspecialchars(strip_tags($this->mobile));
 
-        // Bind parameters using bindValue (or bindParam)
+        // Bind parameters
         $stmt->bindValue(1, $this->student_names);
         $stmt->bindValue(2, $this->email);
         $stmt->bindValue(3, $this->mobile);
 
-        // Execute the query and check if successful
+        // Execute and check if successful
         if ($stmt->execute()) {
             return true;
         }
-
         return false;
     }
 
+    // Method to get all data
     public function get_all_data()
     {
         $sql_query = "SELECT * FROM " . $this->table_name;
-        $std_obj = $this->conn->prepare($sql_query);
-        $std_obj->execute();
-        return $std_obj->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->conn->prepare($sql_query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Method to get single data by id
+    public function get_single_data()
+    {
+        // Add a space before WHERE clause
+        $sql_query = "SELECT * FROM " . $this->table_name . " WHERE id = ?";
+
+        // Prepare the statement
+        $stmt = $this->conn->prepare($sql_query);
+
+        // Sanitize and bind the id
+        $this->id = htmlspecialchars(strip_tags($this->id));
+        $stmt->bindValue(1, $this->id, PDO::PARAM_INT);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Fetch single row as an associative array
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $data;
     }
 }
