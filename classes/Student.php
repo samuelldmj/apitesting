@@ -71,4 +71,31 @@ class Student
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
         return $data;
     }
+
+    public function update_data()
+    {
+
+        //update query
+        $sql_query = "UPDATE {$this->table_name} SET student_names = ?, email = ?, mobile = ? WHERE id = ? ";
+
+        //prepare sql
+        $stmt = $this->conn->prepare($sql_query);
+
+        //sanitize sql 
+        $this->student_names = htmlspecialchars(strip_tags($this->student_names));
+        $this->email = htmlspecialchars(strip_tags($this->email));
+        $this->mobile = htmlspecialchars(strip_tags($this->mobile));
+        $this->id = htmlspecialchars(strip_tags($this->id));
+
+        $stmt->bindValue(1, $this->student_names);
+        $stmt->bindValue(2, $this->email);
+        $stmt->bindValue(3, $this->mobile);
+        $stmt->bindValue(4, $this->id, PDO::PARAM_INT);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
 }
